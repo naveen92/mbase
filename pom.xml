@@ -7,11 +7,6 @@
     <packaging>jar</packaging>
     <version>0.1.0</version>
 	<dependencies>
-			<dependency>
-				<groupId>joda-time</groupId>
-				<artifactId>joda-time</artifactId>
-				<version>2.2</version>
-			</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -35,7 +30,7 @@
                             <transformers>
                                 <transformer
                                     implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>main.java.hello.HelloWorld</mainClass>
+                                    <mainClass>main.mbase.controller.IndexController</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
