@@ -1,7 +1,13 @@
 package main.mbase.controller;
 
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RestController
 public class IndexController {
-    public static void main(String[] args) {
-        System.out.println("Inside IndexController");
+    @RequestMapping("/")
+    public String index() {
+        return "Greetings from Spring Boot!";
     }
+
 }
