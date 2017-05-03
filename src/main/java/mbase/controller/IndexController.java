@@ -10,4 +10,9 @@ public class IndexController {
         return "Greetings from Spring Boot with Jenkins build automation..!";
     }
 
+    @RequestMapping("/hello")
+    public String say_hello() {
+        return "Hey, Hello..";
+    }
+
 }
