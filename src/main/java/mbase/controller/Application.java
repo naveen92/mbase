@@ -1,4 +1,4 @@
-package main.mbase.controller;
+package main.java.mbase.controller;
 
 import java.util.Arrays;
 
