@@ -33,18 +33,26 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <start-class>main.java.mbase.controller.Application</start-class>
+        <start-class>main.java.mbase.Application</start-class>
     </properties>
 
     <build>
+		<resources>
+	        <resource>
+	            <directory>src/main/resources</directory>
+	        </resource>
+	        <resource>
+	            <directory>src/main/webapp</directory>
+	        </resource>
+	    </resources>
         <plugins>
 			<plugin>
 	            <artifactId>maven-compiler-plugin</artifactId>
 	        </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
+		    <plugin>
+		        <groupId>org.springframework.boot</groupId>
+		        <artifactId>spring-boot-maven-plugin</artifactId>
+		    </plugin>
         </plugins>
     </build>
 

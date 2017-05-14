@@ -1,4 +1,4 @@
-package main.java.mbase.controller;
+package main.java.mbase;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import main.java.mbase.auth.Account;
+import main.java.mbase.controller.IAccountRepository;
 
 @SpringBootApplication
 public class Application {
