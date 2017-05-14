@@ -1,2 +1,3 @@
 /bin/
 /target/
+/src/main/java/mbase/config/application.properties
