@@ -1,7 +1,3 @@
 /bin/
 /target/
-<<<<<<< HEAD
-#/src/main/java/mbase/config/application.properties
-=======
-#/src/main/resources/application.properties
->>>>>>> ce85cb5... Replaced again application.properties file
+/src/main/resources/application.properties
