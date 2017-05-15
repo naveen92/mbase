@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import main.java.mbase.auth.Account;
 import main.java.mbase.controller.IAccountRepository;
@@ -25,6 +26,7 @@ public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
+    @EnableWebMvc
     @Configuration
     class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
@@ -57,6 +59,7 @@ public class Application {
     }
 
     @EnableWebSecurity
+    @EnableWebMvc
     @Configuration
     class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      
