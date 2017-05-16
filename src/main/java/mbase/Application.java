@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -48,6 +49,7 @@ public class Application {
             if(account != null) {
             return new User(account.getUsername(), account.getPassword(), true, true, true, true,
                     AuthorityUtils.createAuthorityList("USER"));
+            
             } else {
               throw new UsernameNotFoundException("could not find the user '"
                       + username + "'");
@@ -65,7 +67,9 @@ public class Application {
      
       @Override
       protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().fullyAuthenticated().and().
+        http.authorizeRequests()
+        .antMatchers(HttpMethod.OPTIONS,"/").permitAll()
+        .anyRequest().fullyAuthenticated().and().
         httpBasic().and().
         csrf().disable();
       }
