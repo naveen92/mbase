@@ -1,18 +1,138 @@
 <!DOCTYPE html>
+<html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mBase App - Todo</title>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<style>
+body {
+	font-family: verdana;
+}
+ul {
+	list-style-type: none;
+	-webkit-padding-start: 10px;
+}
+li {
+	padding-bottom: 8px;
+}
+input[name='todo_radio'] {
+	margin-right: 10px;
+}
+#message-box {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+</style>
 </head>
 <body>
 <h4>mBase - Application</h4>
-<h5>Todo Manager</h5>
+Todo Manager
 <div id="container">
 <div id="list">
-
+<ul>
+</ul>
 </div>
-<button id="">Create New</button>
-<button id="">Read Top ToDOs</button>
-<button id="">Update</button>
-<button id="">Delete</button>
+<button id="create-new">Create New</button>
+<button id="update">Update</button>
+<button id="delete">Delete</button>
+</div>
+<div id="message-box"></div>
+<div id="create_form_div">
 </div>
 </body>
+<script>
+todo_editor_visible = false;
+$(function(){
+	refresh();
+	construct_create_form();
+});
+
+refresh = function() {
+	$.ajax({
+		type: "GET",
+		url: "/todo/readRecent",
+		success: function(data){
+			$("#list ul").html("");
+			$(data).each(function(){$("#list ul").append("<li><input type=\"radio\" name=\"todo_radio\" value=\"" + this.id + "\"/><span id=\"todo_" + this.id + "\">" + this.todo + "</span></li>");});
+		}
+	});
+}
+
+construct_create_form = function() {
+	$('#create_form_div').append("<br /><input id='todo_message' type='text' value='' placeholder='ToDO message' /> <br/>");
+	$('#create_form_div').append("<br /><select name='select_priority'></select>");
+	todo_editor_visible = false;
+	$('#create_form_div').hide();
+}
+
+$('#create-new').click(function() {
+	if(!todo_editor_visible) {
+		$('#todo_message').val("");
+		$('#create_form_div').show();
+		todo_editor_visible = true;
+	}
+	else {
+		$.ajax({
+			type: "GET",
+			url: "/todo/create?_todo=" + $('#todo_message').val() + "&_priority=1",
+			success: function(data){
+				$("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+				$("#message-box").show();
+				$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+				refresh();
+				$('#create_form_div').hide();
+				todo_editor_visible = false;
+			}
+		});
+	}
+});
+
+$('#update').click(function() {
+	if(!$('input[name="todo_radio"]:checked').val()) {
+		$("#message-box").html("Please select a ToDO..  <span id='self-close' style='cursor: default'>X</span>");
+		$("#message-box").show();
+		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+		return false;
+	}
+	var _id = $('input[name="todo_radio"]:checked').val();
+	if(!todo_editor_visible) {
+		$('#todo_message').val("" + $('#todo_' + _id).html());
+		$('#create_form_div').show();
+		todo_editor_visible = true;
+	}
+	else {
+		$.ajax({
+			type: "GET",
+			url: "/todo/update?id=" + _id + "&_todo=" + $('#todo_message').val() + "&_priority=1",
+			success: function(data){
+				$("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+				$("#message-box").show();
+				$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+				refresh();
+				$('#create_form_div').hide();
+				todo_editor_visible = false;
+			}
+		});
+	}
+});
+
+$('#delete').click(function() {
+	if(!$('input[name="todo_radio"]:checked').val()) {
+		$("#message-box").html("Please select a ToDO..  <span id='self-close' style='cursor: default'>X</span>");
+		$("#message-box").show();
+		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+		return false;
+	}
+	$.ajax({
+		type: "GET",
+		url: "/todo/delete?id=" + $('input[name="todo_radio"]:checked').val(),
+		success: function(data){
+			$("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+			$("#message-box").show();
+			$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+			refresh();
+		}
+	});
+});
+</script>
 </html>
