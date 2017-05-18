@@ -71,6 +71,11 @@ $('#create-new').click(function() {
 		$('#create_form_div').show();
 		todo_editor_visible = true;
 	}
+	else if ($('#todo_message').val() | $('#todo_message').val() == '') {
+		$("#message-box").html("ToDO message is empty.  <span id='self-close' style='cursor: default'>X</span>");
+		$("#message-box").show();
+		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+	}
 	else {
 		$.ajax({
 			type: "GET",
@@ -99,6 +104,11 @@ $('#update').click(function() {
 		$('#todo_message').val("" + $('#todo_' + _id).html());
 		$('#create_form_div').show();
 		todo_editor_visible = true;
+	}
+	else if ($('#todo_message').val() | $('#todo_message').val() == '') {
+		$("#message-box").html("ToDO message is empty.  <span id='self-close' style='cursor: default'>X</span>");
+		$("#message-box").show();
+		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
 	}
 	else {
 		$.ajax({
