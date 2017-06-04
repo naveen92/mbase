@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mBase App - Birthday</title>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<style>
+body {
+	font-family: verdana;
+}
+ul {
+	list-style-type: none;
+	-webkit-padding-start: 10px;
+}
+li {
+	padding-bottom: 8px;
+}
+input[name='birthday_radio'] {
+	margin-right: 10px;
+}
+#message-box {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+</style>
+</head>
+<body>
+<a href="/">Home</a>
+<h4>mBase - Application</h4>
+Birthday Manager
+<div id="container">
+<div id="list">
+<ul>
+</ul>
+</div>
+<button id="create-new">Create New</button>
+<button id="delete">Delete</button>
+</div>
+<div id="message-box"></div>
+<div id="create_form_div">
+</div>
+</body>
+<script>
+birthday_editor_visible = false;
+$(function(){
+	refresh();
+	construct_create_form();
+});
+
+refresh = function() {
+	$.ajax({
+		type: "GET",
+		url: "/birthday/readRecent",
+		success: function(data){
+			$("#list ul").html("");
+			$(data).each(function(){$("#list ul").append("<li><input type=\"radio\" name=\"birthday_radio\" value=\"" + this.id + "\"/><span id=\"birthday_" + this.id + "\">" + this.date + " -> " + this.name + "</span></li>");});
+		}
+	});
+}
+
+construct_create_form = function() {
+	$('#create_form_div').append("<br /><input id='birthday_name' type='text' value='' placeholder='Name' /> <br/>");
+	$('#create_form_div').append("<br /><input id='birthday_date' type='text' value='' placeholder='Date' /> <br/>");
+	birthday_editor_visible = false;
+	$('#create_form_div').hide();
+}
+
+$('#create-new').click(function() {
+	if(!birthday_editor_visible) {
+		$('#birthday_name').val("");
+		$('#birthday_date').val("");
+		$('#create_form_div').show();
+		birthday_editor_visible = true;
+	}
+	else if ($('#birthday_name').val() | $('#birthday_name').val() == '' | $('#birthday_date').val() | $('#birthday_date').val() == '') {
+		$("#message-box").html("Name or Date is empty.  <span id='self-close' style='cursor: default'>X</span>");
+		$("#message-box").show();
+		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+	}
+	else {
+		$.ajax({
+			type: "GET",
+			url: "/birthday/create?_name=" + $('#birthday_name').val() + "&_date=" + $('#birthday_date').val(),
+			success: function(data){
+				$("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+				$("#message-box").show();
+				$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+				refresh();
+				$('#create_form_div').hide();
+				birthday_editor_visible = false;
+			}
+		});
+	}
+});
+
+$('#delete').click(function() {
+	if(!$('input[name="birthday_radio"]:checked').val()) {
+		$("#message-box").html("Please select a record..  <span id='self-close' style='cursor: default'>X</span>");
+		$("#message-box").show();
+		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+		return false;
+	}
+	$.ajax({
+		type: "GET",
+		url: "/birthday/delete?id=" + $('input[name="birthday_radio"]:checked').val(),
+		success: function(data){
+			$("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+			$("#message-box").show();
+			$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+			refresh();
+		}
+	});
+});
+</script>
+</html>

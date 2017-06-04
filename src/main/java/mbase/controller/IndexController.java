@@ -8,7 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class IndexController {
     @RequestMapping("/")
     public String index() {
-        return "Greetings from Spring Boot with Jenkins build automation..!";
+        return "Greetings from Spring Boot with Jenkins build automation..!<br /><h3>Menu</h3>"
+        		+ "<ul>"
+        		+ "<li><a href=\"/index.html\">Todo Manager</a></li>"
+        		+ "<li><a href=\"/birthday.html\">Birthday Manager</a></li>"
+        		+ "<ul>";
     }
 
     @RequestMapping("/hello")

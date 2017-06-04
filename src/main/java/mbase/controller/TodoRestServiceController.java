@@ -13,7 +13,7 @@ import main.java.mbase.model.Todo;
 @EntityScan("main.java.mbase")
 @CrossOrigin(origins = "*")
 @RestController
-public class RestServiceController {
+public class TodoRestServiceController {
 	@Autowired
 	private ITodoRepository repo;
     // CREATE
@@ -29,7 +29,7 @@ public class RestServiceController {
         return "creation successful: " + String.valueOf(todo.getId());
     }
      
-// READ
+    // READ
     @RequestMapping("/todo/read")
     @ResponseBody
     public Todo readTodo(long id) {
