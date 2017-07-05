@@ -15,14 +15,9 @@ public class IndexController {
         		+ "<ul>";
     }
 
-    @RequestMapping("/hello")
-    public String say_hello() {
-        return "Hey, Hello..";
-    }
-
-    @RequestMapping("/hello/{name}")
-    public String say_hello_by_name(@PathVariable("name") String name) {
-        return "Hey, Hello " + name;
+    @RequestMapping("/about")
+    public String about() {
+        return "MBase personal assistant application";
     }
 
 }

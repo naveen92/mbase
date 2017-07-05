@@ -44,7 +44,7 @@ public class BirthdayRestServiceController {
     // UPDATE
     @RequestMapping("/birthday/update")
     @ResponseBody
-    public String updateTodo(long id, String _name, String _date) {
+    public String updateBirthday(long id, String _name, String _date) {
     	Birthday birthday;
         try {
             birthday = repo.findOne(id);
@@ -60,7 +60,7 @@ public class BirthdayRestServiceController {
     // DELETE
     @RequestMapping("/birthday/delete")
     @ResponseBody
-    public String deleteTodo(long id) {
+    public String deleteBirthday(long id) {
         try {
             repo.delete(id);
         } catch (Exception e) {

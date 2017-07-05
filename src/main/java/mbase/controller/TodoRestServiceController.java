@@ -14,8 +14,10 @@ import main.java.mbase.model.Todo;
 @CrossOrigin(origins = "*")
 @RestController
 public class TodoRestServiceController {
+	
 	@Autowired
 	private ITodoRepository repo;
+	
     // CREATE
     @RequestMapping("/todo/create")
     @ResponseBody
