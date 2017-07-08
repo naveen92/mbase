@@ -28,7 +28,7 @@ public class DomainRestServiceController {
         } catch (Exception e) {
             return e.getMessage();
         }
-        return "creation successful: " + String.valueOf(domain.getId());
+        return String.valueOf(domain.getId());
     }
      
     // READ

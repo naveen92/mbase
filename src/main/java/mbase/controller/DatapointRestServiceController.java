@@ -28,7 +28,7 @@ public class DatapointRestServiceController {
         } catch (Exception e) {
             return e.getMessage();
         }
-        return "creation successful: " + String.valueOf(datapoint.getId());
+        return String.valueOf(datapoint.getId());
     }
      
     // READ
@@ -52,6 +52,36 @@ public class DatapointRestServiceController {
         	datapoint = repo.findOne(id);
         	datapoint.setData(_data);
         	datapoint.setArea(_area);
+        	datapoint.setLink(_link);
+            repo.save(datapoint);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return datapoint.toString();
+    }
+ 
+    // UPDATE data
+    @RequestMapping("/myblogger/datapoint/updateData")
+    @ResponseBody
+    public String updateDatapointData(long id, String _data) {
+    	Datapoint datapoint = null;
+        try {
+        	datapoint = repo.findOne(id);
+        	datapoint.setData(_data);
+            repo.save(datapoint);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return datapoint.toString();
+    }
+ 
+    // UPDATE link
+    @RequestMapping("/myblogger/datapoint/updateLink")
+    @ResponseBody
+    public String updateDatapointLink(long id, String _link) {
+    	Datapoint datapoint = null;
+        try {
+        	datapoint = repo.findOne(id);
         	datapoint.setLink(_link);
             repo.save(datapoint);
         } catch (Exception e) {

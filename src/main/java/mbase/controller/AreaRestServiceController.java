@@ -60,6 +60,51 @@ public class AreaRestServiceController {
         return area.toString();
     }
  
+    // UPDATE name
+    @RequestMapping("/myblogger/area/updateName")
+    @ResponseBody
+    public String updateAreaName(long id, String _name) {
+    	Area area = null;
+        try {
+        	area = repo.findOne(id);
+        	area.setName(_name);
+            repo.save(area);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return area.toString();
+    }
+ 
+    // UPDATE parent
+    @RequestMapping("/myblogger/area/updateParent")
+    @ResponseBody
+    public String updateAreaParent(long id, String _parent) {
+    	Area area = null;
+        try {
+        	area = repo.findOne(id);
+        	area.setParent(_parent);
+            repo.save(area);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return area.toString();
+    }
+ 
+    // UPDATE count
+    @RequestMapping("/myblogger/area/updateCount")
+    @ResponseBody
+    public String updateAreaCount(long id, int _count) {
+    	Area area = null;
+        try {
+        	area = repo.findOne(id);
+        	area.setCount(_count);
+            repo.save(area);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return area.toString();
+    }
+ 
     // DELETE
     @RequestMapping("/myblogger/area/delete")
     @ResponseBody

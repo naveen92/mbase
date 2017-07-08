@@ -28,7 +28,7 @@ public class SubjectRestServiceController {
         } catch (Exception e) {
             return e.getMessage();
         }
-        return "creation successful: " + String.valueOf(subject.getId());
+        return String.valueOf(subject.getId());
     }
      
     // READ
@@ -52,6 +52,51 @@ public class SubjectRestServiceController {
         	subject = repo.findOne(id);
         	subject.setContent(_content);
         	subject.setArea(_area);
+        	subject.setDatapoint(_datapoint);
+            repo.save(subject);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return subject.toString();
+    }
+ 
+    // UPDATE content
+    @RequestMapping("/myblogger/subject/updateContent")
+    @ResponseBody
+    public String updateSubjectContent(long id, String _content) {
+    	Subject subject = null;
+        try {
+        	subject = repo.findOne(id);
+        	subject.setContent(_content);
+            repo.save(subject);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return subject.toString();
+    }
+ 
+    // UPDATE area
+    @RequestMapping("/myblogger/subject/updateArea")
+    @ResponseBody
+    public String updateSubjectArea(long id, String _area) {
+    	Subject subject = null;
+        try {
+        	subject = repo.findOne(id);
+        	subject.setArea(_area);
+            repo.save(subject);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return subject.toString();
+    }
+ 
+    // UPDATE datapoint
+    @RequestMapping("/myblogger/subject/updateDatapoint")
+    @ResponseBody
+    public String updateSubjectDatapoint(long id, String _datapoint) {
+    	Subject subject = null;
+        try {
+        	subject = repo.findOne(id);
         	subject.setDatapoint(_datapoint);
             repo.save(subject);
         } catch (Exception e) {
