@@ -117,7 +117,7 @@ public class AreaRestServiceController {
         return "deletion successful";
     }
  
-    @RequestMapping("/myblogger/datapoint/readByParent")
+    @RequestMapping("/myblogger/area/readByParent")
     public List<Area> readByParent(String parent) {
         List<Area> __area = repo.findByParent(parent);
         return __area;

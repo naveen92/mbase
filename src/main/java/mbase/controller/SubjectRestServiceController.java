@@ -117,9 +117,9 @@ public class SubjectRestServiceController {
         return "deletion successful";
     }
  
-    @RequestMapping("/myblogger/subject/readAll")
-    public List<Subject> readAll() {
-        List<Subject> __subject = repo.findAll();
+    @RequestMapping("/myblogger/subject/findByArea")
+    public List<Subject> findByArea(String _area) {
+        List<Subject> __subject = repo.findByArea(_area);
         return __subject;
     }
 }

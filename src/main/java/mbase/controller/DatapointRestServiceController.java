@@ -102,9 +102,9 @@ public class DatapointRestServiceController {
         return "deletion successful";
     }
  
-    @RequestMapping("/myblogger/datapoint/readAll")
-    public List<Datapoint> readAll() {
-        List<Datapoint> __datapoint = repo.findAll();
+    @RequestMapping("/myblogger/datapoint/findByArea")
+    public List<Datapoint> findByArea(String _area) {
+        List<Datapoint> __datapoint = repo.findByArea(_area);
         return __datapoint;
     }
 }
