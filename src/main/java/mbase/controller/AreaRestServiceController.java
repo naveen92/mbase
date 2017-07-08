@@ -28,7 +28,7 @@ public class AreaRestServiceController {
         } catch (Exception e) {
             return e.getMessage();
         }
-        return "creation successful: " + String.valueOf(area.getId());
+        return String.valueOf(area.getId());
     }
      
     // READ
