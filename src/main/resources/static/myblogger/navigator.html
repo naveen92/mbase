@@ -1,117 +1,1000 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>mBase myblogger - Navigator</title>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<style>
-body {
-	font-family: verdana;
-}
-ul {
-	list-style-type: none;
-	-webkit-padding-start: 10px;
-}
-li {
-	padding-bottom: 8px;
-}
-input[name='birthday_radio'] {
-	margin-right: 10px;
-}
-#message-box {
-	padding-top: 10px;
-	padding-bottom: 10px;
-}
-</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mBase myblogger - Navigator</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <style>
+        body {
+            font-family: verdana;
+        }
+        
+        ul {
+            list-style-type: none;
+            -webkit-padding-start: 10px;
+        }
+        
+        li {
+            padding-bottom: 8px;
+        }
+        
+        d {
+            border-bottom-style: dashed;
+            border-width: thin;
+        }
+        
+        #message-box {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        #button-control {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        #container {
+            max-width: 500px;
+        }
+        
+        .areaChild {
+            font-family: courier;
+            font-size: .8 em;
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+        
+        .pinnable-word {
+            font-family: courier;
+            font-size: .8 em;
+            padding-left: 4px;
+            padding-right: 4px;
+            margin: 3px;
+            float: left;
+            border: 1px solid black;
+            background: #99c2ff;
+        }
+        
+        .panel {
+            margin-top: 10px;
+            padding-left: 5px;
+            padding-right: 5px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border: 1px solid black;
+        }
+        
+        .areaTag {
+            margin: 7px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px solid black;
+            background: #f4f142;
+        }
+        
+        .area-details-cp {
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+        
+        #domain-div {
+            background: #99ff66;
+        }
+        
+        #subject-div {
+            background: #99c2ff;
+        }
+        
+        #area-div {
+            background: #9FFFCB;
+        }
+        
+        #datapoint-div {
+            background: #ffbb99;
+        }
+        
+        #locator {
+            border-bottom: 1px black solid;
+            margin-bottom: 5px;
+            padding-bottom: 3px;
+        }
+        
+        .mark-bottom {
+            border-bottom: 1px solid grey;
+        }
+        
+        #area-control-panel {
+            border-top: 1px solid grey;
+            margin-top: 7px;
+            padding-top: 3px;
+        }
+    </style>
 </head>
+
 <body>
-<a href="/">Home</a>
-<h4>mBase myblogger - Navigator</h4>
-Select Domain
-<div id="container">
-	<div id="domain-select-div">
-		<select id="domain-select">
-			<option>-- select --</option>
-		</select>
-	</div>
-	<button id="create-new">Create New</button>
-	<button id="delete">Delete</button>
-</div>
-<div id="message-box">
-</div>
-<div id="create_form_div">
-</div>
+    <a href="/">Home</a>
+    <h4>mBase myblogger - Navigator</h4>
+    <div id="container">
+        <div id="domain-div" class="panel">
+            Select Domain
+            <select id="domain-select">
+				<option>--   select   --</option>
+			</select><br />
+            <span class="button-control">
+                <button id="domain-create-new">Create New</button>
+                <button id="domain-delete">Delete</button>
+                <button onclick="return collapse_editors();">Collapse Editors</button>
+                <button onclick="return reload_this_domain();">Reload this Domain</button>
+            </span>
+            <div id="domain_editor_form_div">
+            </div>
+        </div>
+        <hr />
+        <div id="subject-div" style="display:None;" class="panel">
+            Subject:&nbsp;<span id="subject-details"></span>
+            <span class="button-control">
+                <button id="subject-create-new" style="display:None;">Create New</button>
+                <button id="subject-link">Link this Subject</button>
+                <button id="subject-link-datapoint">Link a Data Point</button>
+                <button id="subject-delete">Delete</button>
+            </span>
+            <div id="subject_editor_form_div">
+            </div>
+        </div>
+        <div id="area-div" style="display:None;" class="panel">
+            <div id="area-content"></div>
+            <div id="area-control-panel" style="display: None">
+                <span class="area-details-cp">
+                    <span id="count-in-area"></span>
+                </span>
+                <button id="area-copy">Copy</button>
+                <button id="area-browse">Browse</button>
+            </div>
+            <div id="subject-by-area-container"></div>
+        </div>
+        <div id="datapoint-div" style="display:None;" class="panel">
+            <div id='locator'></div>
+            Data Points:<br />
+            <div id="datapoint-details"></div>
+            <span class="button-control">
+                <button id="datapoint-create-new">Create New</button>
+                <button id="datapoint-link-new">Link New</button>
+                <button id="datapoint-update">Update</button>
+                <button id="datapoint-delete">Delete</button>
+                <button id="datapoint-pin-subject">Pin a Subject</button>
+                <button id="subject-browse" style="display: none;">Browse Subject</button>
+            </span>
+            <div id="datapoint_editor_form_div">
+            </div>
+        </div>
+    </div>
+    <div id="message-box"></div>
 </body>
 <script>
-_editor_visible = false;
-$(function(){
-	refresh();
-	construct_create_form();
-});
+    copier = "";
+    parent_area = "";
+    current_area = "";
+    _editor_visible = false;
+    domain_editor_visible = false;
+    subject_editor_visible = false;
+    subject_editor_constructed = false;
+    area_editor_constructed = false;
+    area_editor_visible = false;
+    area_control_panel_visible = false;
+    datapoint_editor_constructed = false;
+    datapoint_editor_visible = false;
+    area_editor_constructed2 = false;
+    area_editor_visible2 = false;
+    pinning_in_progress = false;
+    linked_subject_selected = false;
+    subject_to_browse = "";
+    select_option_placeholder = "-- select --";
+    base_url = ""
 
-refresh = function() {
-	$.ajax({
-		type: "GET",
-		url: "/myblogger/domain/readAll",
-		success: function(data){
-			$("#domain-select").html("<option>-- select --</option>");
-			$(data).each(function(){$("#domain-select").append("<option>" + this.name + "</option>");});
-		}
-	});
-}
+    auth_fn = function(xhr) {}
 
-construct_create_form = function() {
-	$('#create_form_div').append("<br /><input id='birthday_name' type='text' value='' placeholder='Name' /> <br/>");
-	$('#create_form_div').append("<br /><input id='birthday_date' type='text' value='' placeholder='Date' /> <br/>");
-	_editor_visible = false;
-	$('#create_form_div').hide();
-}
+    $(function() {
+        refresh_domain();
+        construct_editor_form_domain();
+    });
 
-$('#create-new').click(function() {
-	if(!birthday_editor_visible) {
-		$('#birthday_name').val("");
-		$('#birthday_date').val("");
-		$('#create_form_div').show();
-		_editor_visible = true;
-	}
-	else if ($('#birthday_name').val() | $('#birthday_name').val() == '' | $('#birthday_date').val() | $('#birthday_date').val() == '') {
-		$("#message-box").html("Name or Date is empty.  <span id='self-close' style='cursor: default'>X</span>");
-		$("#message-box").show();
-		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
-	}
-	else {
-		$.ajax({
-			type: "GET",
-			url: "/birthday/create?_name=" + $('#birthday_name').val() + "&_date=" + $('#birthday_date').val(),
-			success: function(data){
-				$("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
-				$("#message-box").show();
-				$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
-				refresh();
-				$('#create_form_div').hide();
-				_editor_visible = false;
-			}
-		});
-	}
-});
+    reload_this_domain = function() {
+        current_area = "";
+        collapse_editors();
+        close_message();
+        $('#subject-details').html("");
+        $('#subject-div').hide();
+        $('#area-content').html("");
+        $('#area-div').hide();
+        $('#datapoint-details').html("");
+        $('#datapoint-div').hide();
+        domain_changed();
+    }
 
-$('#delete').click(function() {
-	if(!$('input[name="birthday_radio"]:checked').val()) {
-		$("#message-box").html("Please select a record..  <span id='self-close' style='cursor: default'>X</span>");
-		$("#message-box").show();
-		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
-		return false;
-	}
-	$.ajax({
-		type: "GET",
-		url: "/birthday/delete?id=" + $('input[name="birthday_radio"]:checked').val(),
-		success: function(data){
-			$("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
-			$("#message-box").show();
-			$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
-			refresh();
-		}
-	});
-});
+    collapse_editors = function() {
+        $('#domain_editor_form_div').hide();
+        domain_editor_visible = false;
+        $('#subject_editor_form_div').hide();
+        subject_editor_visible = false;
+        $('#datapoint_editor_form_div').hide();
+        datapoint_editor_visible = false;
+        if (area_editor_visible && area_editor_constructed) {
+            $('#immediate-area-creator').hide();
+            area_editor_visible = false;
+        }
+        if (area_editor_visible2 && area_editor_constructed2) {
+            $('#immediate-area-creator2').hide();
+            area_editor_visible2 = false;
+        }
+        if (area_control_panel_visible) {
+            $('#area-control-panel').hide();
+            area_control_panel_visible = false;
+        }
+    }
+
+    refresh_domain = function() {
+        $.ajax({
+            type: "GET",
+            url: base_url + "/myblogger/domain/readAll",
+            beforeSend: auth_fn,
+            success: function(data) {
+                $("#domain-select").html("<option value='' subjectid='null'>" + select_option_placeholder + "</option>");
+                $(data).each(function() {
+                    $("#domain-select").append("<option value='" + this.id + "' subjectid='" + this.subjectID + "'>" + this.name + "</option>");
+                });
+                $("#domain-select").change(domain_changed);
+            }
+        });
+    }
+
+    construct_editor_form_domain = function() {
+        $('#domain_editor_form_div').append("<br /><input id='new_domain_name' type='text' value='' placeholder='Domain Name' /> <br/>");
+        domain_editor_visible = false;
+        $('#domain_editor_form_div').hide();
+    }
+
+    $('#domain-create-new').click(function() {
+        if (!domain_editor_visible) {
+            $('#new_domain_name').val("");
+            $('#domain_editor_form_div').show();
+            domain_editor_visible = true;
+        } else if ($('#new_domain_name').val() | $('#new_domain_name').val() == '') {
+            $("#message-box").html("Domain Name is empty. <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").show();
+            $("#self-close").click(function() {
+                $(this).parent().hide();
+                $(this).parent().html("");
+            });
+        } else {
+            $.ajax({
+                type: "GET",
+                url: base_url + "/myblogger/domain/create?_name=" + $('#new_domain_name').val(),
+                beforeSend: auth_fn,
+                success: function(data) {
+                    copier = data;
+                    $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+                    $("#message-box").show();
+                    $("#self-close").click(function() {
+                        $(this).parent().hide();
+                        $(this).parent().html("");
+                    });
+                    refresh_domain();
+                    $('#domain_editor_form_div').hide();
+                    domain_editor_visible = false;
+                }
+            });
+        }
+    });
+
+    update_domain = function(domain_id, domain_name, subjectid) {
+        $.ajax({
+            type: "GET",
+            url: base_url + "/myblogger/domain/update?id=" + domain_id + "&_name=" + domain_name + "&_subjectid=" + subjectid,
+            beforeSend: auth_fn,
+            success: function(data) {
+                copier = data;
+                $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+                $("#message-box").show();
+                $("#self-close").click(function() {
+                    $(this).parent().hide();
+                    $(this).parent().html("");
+                });
+                reload_this_domain();
+            }
+        });
+    }
+
+    $('#domain-delete').click(function() {
+        if ($('#domain-select').val() != select_option_placeholder) {
+            $.ajax({
+                type: "GET",
+                url: base_url + "/myblogger/domain/delete?id=" + $('#domain-select').val(),
+                beforeSend: auth_fn,
+                success: function(data) {
+                    copier = data;
+                    $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+                    $("#message-box").show();
+                    $("#self-close").click(function() {
+                        $(this).parent().hide();
+                        $(this).parent().html("");
+                    });
+                    refresh_domain();
+                }
+            });
+        }
+    });
+
+    load_children_area = function(id) {
+        $.ajax({
+            type: "GET",
+            url: base_url + "/myblogger/area/readByParent?parent=" + id,
+            beforeSend: auth_fn,
+            success: function(data) {
+                $.each(data, function() {
+                    $('#area-content div').append("<span class='areaChild' onclick='show_area_cp(\"" + this.id + "\", this);' area='" + this.id + "'>" + this.name + "</span>");
+                });
+            }
+        });
+    }
+
+    updateLocation = function() {
+        $('#locator').html("Location: " + current_area);
+    }
+
+    browse_subject = function(subjectid) {
+        if (subject_editor_visible) {
+            $('#subject_editor_form_div').hide();
+            subject_editor_visible = false;
+        }
+        $('#subject-details').html("");
+        $.ajax({
+            type: "GET",
+            url: base_url + "/myblogger/subject/read?id=" + subjectid,
+            beforeSend: auth_fn,
+            success: function(data) {
+                $('#subject-details').html("<span subjectid='" + this.url.split("id=")[1] + "' datapoint='" + data.datapoint + "' area='" + data.area + "'>" + data.content + "</span>");
+                resolveArea(data.area, "", function(_this, _for) {
+                    $('#area-div').show();
+                    $('#area-content').html("<span area='" + _this.id + "'>Area: " + _this.name + "</span><div></div>");
+                    current_area = _this.name;
+                    updateLocation();
+                    load_children_area(_this.id);
+                });
+                load_datapoint_wrapper();
+                $('#datapoint-div').show();
+            }
+        });
+    }
+
+    domain_changed = function() {
+        if ($("#domain-select").val() != select_option_placeholder) {
+            collapse_editors();
+            current_area = "";
+            $('#subject-div').show();
+            subjectid = $('#domain-select').find(':selected').attr('subjectid');
+            if (subjectid != "null") {
+                browse_subject(subjectid);
+            } else {
+                if (!subject_editor_constructed) {
+                    construct_editor_form_subject();
+                }
+                $('#subject-create-new').show();
+                $('#area-div').hide();
+                $('#datapoint-div').hide();
+            }
+        }
+    }
+
+    update_subject_datapoint = function(arg_id, arg_dp_id) {
+        $.ajax({
+            type: "GET",
+            url: base_url + "/myblogger/subject/updateDatapoint?id=" + arg_id + "&_datapoint=" + arg_dp_id,
+            beforeSend: auth_fn,
+            success: function(data) {
+                $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+                $("#message-box").show();
+                $("#self-close").click(function() {
+                    $(this).parent().hide();
+                    $(this).parent().html("");
+                });
+                load_datapoint_wrapper();
+            }
+        });
+    }
+
+    resolveArea = function(areaID, _for, callback) {
+        $.ajax({
+            type: "GET",
+            _for: _for,
+            url: base_url + "/myblogger/area/read?id=" + areaID,
+            beforeSend: auth_fn,
+            success: function(data) {
+                callback(data, this._for);
+            }
+        });
+    }
+
+    $('#subject-link-datapoint').click(function() {
+        subjectid = $('#subject-details span').attr('subjectid');
+        update_subject_datapoint(subjectid, copier);
+    });
+
+    show_message = function(msg) {
+        $("#message-box").html("" + msg + "  <span id='self-close' style='cursor: default'>X</span>");
+        $("#message-box").show();
+        $("#self-close").click(close_message);
+    }
+
+    close_message = function(msg) {
+        $("#message-box").hide();
+        $("#message-box").html("");
+    }
+
+    load_datapoint_wrapper = function() {
+        datapoint = $('#subject-details span').attr('datapoint');
+        $('#datapoint-details').html("");
+        if (!datapoint_editor_constructed) {
+            construct_editor_form_datapoint();
+        }
+        $('#datapoint-details').html("<ul></ul>");
+        show_message("Loading datapoints...");
+        if (datapoint != "0")
+            load_datapoint(datapoint, "");
+        else {
+            $('#datapoint-details ul').append("<li><input type='radio' name='datapoint_radio' value='' area='' parentDP='' /><span id=\"datapoint_0\">List is empty.</span></li>");
+            close_message();
+        }
+    }
+
+    load_datapoint = function(datapoint, parentID) {
+        parentDP = "";
+        if (parentID != "") {
+            parentDP = parentID;
+        }
+        $.ajax({
+            type: "GET",
+            url: base_url + "/myblogger/datapoint/read?id=" + datapoint,
+            beforeSend: auth_fn,
+            success: function(data) {
+                $('#datapoint-details ul').append("<li><input type='radio' name='datapoint_radio' value='" + data.id + "' area='" + data.area + "' parentDP='" + parentDP + "' link='" + data.link + "'/><span id=\"datapoint_" + data.id + "\">" + data.data + "</span></li>");
+                resolveArea(data.area, data, function(_this, data) {
+                    $('#datapoint_' + data.id).parent().append("<span class='areaTag' area='" + _this.id + "'>" + _this.name + "</span>");
+                });
+                _link_undefinied = false;
+                _link_empty = false;
+                if (typeof data.link != "undefined") {
+                    if (data.link != "") {
+                        datapoint = data.link;
+                        load_datapoint(datapoint, data.id);
+                    } else
+                        _link_empty = true;
+                } else
+                    _link_undefinied = true;
+                if (_link_undefinied || _link_empty) {
+                    close_message();
+                    $('d').click(function() {
+                        if (linked_subject_selected) {
+                            $("#subject-browse").hide();
+                            $(this).css("borderBottomStyle", "dashed");
+                            linked_subject_selected = false;
+                        } else {
+                            $("#subject-browse").show();
+                            $(this).css("borderBottomStyle", "solid");
+                            subject_to_browse = $(this).attr("l");
+                            linked_subject_selected = true;
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    construct_editor_form_subject = function() {
+        $('#subject_editor_form_div').append("<br /><input id='subject_content' type='text' value='' placeholder='Subject' /> <br/>");
+        $('#subject_editor_form_div').append("<br /><select id='area_select_by_subject'></select>&nbsp;<span id='immediate-area-creator'><button id='create-new-area'>Create new Topic</button></span><br/>");
+        $('#subject_editor_form_div').append("<br /><input id='subject_datapoint' type='text' value='' placeholder='Content' /> <br/>");
+        $('#create-new-area').click(create_new_area);
+        subject_editor_visible = false;
+        subject_editor_constructed = true;
+        $('#subject_editor_form_div').hide();
+    }
+
+    $('#subject-link').click(function() {
+        update_domain($('#domain-select').val(), $('#domain-select').find(":selected").html(), copier);
+    });
+
+    $('#subject-create-new').click(function() {
+        if (!subject_editor_visible) {
+            $('#subject_content').val("");
+            $('#area_select_by_subject').val("");
+            $('#subject_datapoint').val("0");
+            $('#subject_editor_form_div').show();
+            subject_editor_visible = true;
+        } else if ($('#subject_content').val() == '' | $('#area_select_by_subject').val() == '' | $('#subject_datapoint').val() == '') {
+            $("#message-box").html("Insufficient form entry. <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").show();
+            $("#self-close").click(function() {
+                $(this).parent().hide();
+                $(this).parent().html("");
+            });
+        } else {
+            $.ajax({
+                type: "GET",
+                url: base_url + "/myblogger/subject/create?_content=" + $('#subject_content').val() + "&_area=" + $('#area_select_by_subject').val() + "&_datapoint=" + $('#subject_datapoint').val(),
+                beforeSend: auth_fn,
+                success: function(data) {
+                    copier = data;
+                    $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+                    $("#message-box").show();
+                    $("#self-close").click(function() {
+                        $(this).parent().hide();
+                        $(this).parent().html("");
+                    });
+                    $('#subject_editor_form_div').hide();
+                    subject_editor_visible = false;
+                }
+            });
+        }
+    });
+
+    construct_editor_form_area = function() {
+        $('#immediate-area-creator').append("<br /><input id='area_name' type='text' value='' placeholder='Area Name' /> <br/>");
+        $('#immediate-area-creator').append("<br /><input id='area_parent' type='text' value='' placeholder='Parent Area' />");
+        area_editor_visible = false;
+        area_editor_constructed = true;
+        $('#immediate-area-creator').hide();
+    }
+
+    create_new_area = function() {
+        if (!area_editor_visible) {
+            if (!area_editor_constructed)
+                construct_editor_form_area();
+            $('#area_name').val("");
+            $('#area_parent').val("");
+            $('#immediate-area-creator').show();
+            area_editor_visible = true;
+        } else if ($('#area_name').val() == '') {
+            $("#message-box").html("Insufficient form entry. <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").show();
+            $("#self-close").click(function() {
+                $(this).parent().hide();
+                $(this).parent().html("");
+            });
+        } else {
+            $.ajax({
+                type: "GET",
+                url: base_url + "/myblogger/area/create?_name=" + $('#area_name').val() + "&_parent=" + $('#area_parent').val() + "&_count=0",
+                beforeSend: auth_fn,
+                success: function(data) {
+                    copier = data;
+                    $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+                    $("#message-box").show();
+                    $("#self-close").click(function() {
+                        $(this).parent().hide();
+                        $(this).parent().html("");
+                    });
+                    $('#area_select_by_subject').append("<option value='" + data + "'>" + $('#area_name').val() + "</option>");
+                    $('#immediate-area-creator').hide();
+                    area_editor_visible = false;
+                }
+            });
+        }
+    }
+
+    construct_editor_form_datapoint = function() {
+        $('#datapoint_editor_form_div').append("<br /><input id='datapoint_data' type='text' value='' placeholder='Data' /> <br/>");
+        $('#datapoint_editor_form_div').append("<br /><select id='area_select_by_datapoint'></select>&nbsp;<span id='immediate-area-creator2'><button id='create-new-area2'>Create new Topic</button></span><br/>");
+        $('#create-new-area2').click(create_new_area2);
+        datapoint_editor_visible = false;
+        datapoint_editor_constructed = true;
+        $('#datapoint_editor_form_div').hide();
+    }
+
+    construct_editor_form_area2 = function() {
+        $('#immediate-area-creator2').append("<br /><input id='area_name2' type='text' value='' placeholder='Area Name' /> <br/>");
+        $('#immediate-area-creator2').append("<br /><input id='area_parent2' type='text' value='' placeholder='Parent Area' />&nbsp;<button id='parent_area_picker'>Pick by Subject</button>");
+        area_editor_visible2 = false;
+        area_editor_constructed2 = true;
+        $('#immediate-area-creator2').hide();
+        $('#parent_area_picker').click(function() {
+            if ($(this).html() == "Clear") {
+                $('#area_parent2').val("");
+                $(this).html("Pick by Subject");
+            } else {
+                $('#area_parent2').val($('#subject-details span').attr('area'));
+                $(this).html("Clear");
+            }
+        });
+    }
+
+    create_new_area2 = function() {
+        if (!area_editor_visible2) {
+            if (!area_editor_constructed2)
+                construct_editor_form_area2();
+            $('#area_name2').val("");
+            $('#area_parent2').val("");
+            $('#immediate-area-creator2').show();
+            area_editor_visible2 = true;
+        } else if ($('#area_name2').val() == '') {
+            $("#message-box").html("Insufficient form entry. <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").show();
+            $("#self-close").click(function() {
+                $(this).parent().hide();
+                $(this).parent().html("");
+            });
+        } else {
+            $.ajax({
+                type: "GET",
+                url: base_url + "/myblogger/area/create?_name=" + $('#area_name2').val() + "&_parent=" + $('#area_parent2').val() + "&_count=0",
+                beforeSend: auth_fn,
+                success: function(data) {
+                    copier = data;
+                    $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+                    $("#message-box").show();
+                    $("#self-close").click(function() {
+                        $(this).parent().hide();
+                        $(this).parent().html("");
+                    });
+                    $('#area_select_by_datapoint').append("<option value='" + data + "'>" + $('#area_name2').val() + "</option>");
+                    $('#immediate-area-creator2').hide();
+                    area_editor_visible2 = false;
+                }
+            });
+        }
+    }
+
+    create_new_datapoint = function() {
+        if (!datapoint_editor_visible) {
+            if (!datapoint_editor_constructed)
+                construct_editor_form_datapoint();
+            $('#datapoint_data').val("");
+            $('#datapoint_editor_form_div').show();
+            datapoint_editor_visible = true;
+            area = $('#subject-details span').attr('area');
+            $('#area_select_by_datapoint').html("");
+            resolveArea(area, "", function(_this, _for) {
+                $('#area_select_by_datapoint').append("<option value='" + _this.id + "'>" + _this.name + "</option>");
+            });
+            $.ajax({
+                type: "GET",
+                url: base_url + "/myblogger/area/readByParent?parent=" + area,
+                beforeSend: auth_fn,
+                success: function(data) {
+                    $.each(data, function() {
+                        $('#area_select_by_datapoint').append("<option value='" + this.id + "'>" + this.name + "</option>");
+                    });
+                }
+            });
+        } else if ($('#datapoint_data').val() == '') {
+            $("#message-box").html("Insufficient form entry. <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").show();
+            $("#self-close").click(function() {
+                $(this).parent().hide();
+                $(this).parent().html("");
+            });
+        } else {
+            $.ajax({
+                type: "GET",
+                url: base_url + "/myblogger/datapoint/create?_data=" + $('#datapoint_data').val() + "&_area=" + $('#area_select_by_datapoint').val() + "&_link=",
+                beforeSend: auth_fn,
+                success: function(data) {
+                    copier = data;
+                    $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+                    $("#message-box").show();
+                    $("#self-close").click(function() {
+                        $(this).parent().hide();
+                        $(this).parent().html("");
+                    });
+                    $('#datapoint_editor_form_div').hide();
+                    datapoint_editor_visible = false;
+                }
+            });
+        }
+    }
+
+    link_new_datapoint = function() {
+        var area = $('input[name="datapoint_radio"]:checked').attr("area");
+        if (typeof area == "undefined") {
+            $("#message-box").html("Select a data point to link. <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").show();
+            $("#self-close").click(function() {
+                $(this).parent().hide();
+                $(this).parent().html("");
+            });
+            return;
+        }
+        if (!datapoint_editor_visible) {
+            if (!datapoint_editor_constructed)
+                construct_editor_form_datapoint();
+            $('#datapoint_data').val("");
+            area = $('input[name="datapoint_radio"]:checked').attr("area");
+            $('#area_select_by_datapoint').html("");
+            resolveArea(area, "", function(_this, _for) {
+                $('#area_select_by_datapoint').append("<option value='" + _this.id + "'>" + _this.name + "</option>");
+            });
+            $.ajax({
+                type: "GET",
+                url: base_url + "/myblogger/area/readByParent?parent=" + area,
+                beforeSend: auth_fn,
+                success: function(data) {
+                    $.each(data, function() {
+                        $('#area_select_by_datapoint').append("<option value='" + this.id + "'>" + this.name + "</option>");
+                    });
+                }
+            });
+            $('#datapoint_editor_form_div').show();
+            datapoint_editor_visible = true;
+        } else if ($('#datapoint_data').val() == '') {
+            $("#message-box").html("Insufficient form entry. <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").show();
+            $("#self-close").click(function() {
+                $(this).parent().hide();
+                $(this).parent().html("");
+            });
+        } else {
+            $.ajax({
+                type: "GET",
+                url: base_url + "/myblogger/datapoint/create?_data=" + $('#datapoint_data').val() + "&_area=" + $('#area_select_by_datapoint').val() + "&_link=",
+                beforeSend: auth_fn,
+                success: function(data) {
+                    copier = data;
+                    $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+                    $("#message-box").show();
+                    $("#self-close").click(function() {
+                        $(this).parent().hide();
+                        $(this).parent().html("");
+                    });
+                    $.ajax({
+                        type: "GET",
+                        url: base_url + "/myblogger/datapoint/updateLink?id=" + $('input[name="datapoint_radio"]:checked').val() + "&_link=" + copier,
+                        beforeSend: auth_fn,
+                        success: function(data) {
+                            copier = data;
+                            $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+                            $("#message-box").show();
+                            $("#self-close").click(function() {
+                                $(this).parent().hide();
+                                $(this).parent().html("");
+                            });
+                            $('#datapoint_editor_form_div').hide();
+                            datapoint_editor_visible = false;
+                            load_datapoint_wrapper();
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    update_datapoint = function() {
+        if (!$('input[name="datapoint_radio"]:checked').val()) {
+            $("#message-box").html("Please select a Data Point..  <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").show();
+            $("#self-close").click(function() {
+                $(this).parent().hide();
+                $(this).parent().html("");
+            });
+            return false;
+        }
+        var _id = $('input[name="datapoint_radio"]:checked').val();
+        if (!datapoint_editor_visible && ($("#dp-operation-preview").length == 0)) {
+            $('#datapoint_data').val("" + $('#datapoint_' + _id).html());
+            area = $('input[name="datapoint_radio"]:checked').attr("area");
+            $('#area_select_by_datapoint').html("");
+            resolveArea(area, "", function(_this, _for) {
+                $('#area_select_by_datapoint').append("<option value='" + _this.id + "'>" + _this.name + "</option>");
+            });
+            $.ajax({
+                type: "GET",
+                url: base_url + "/myblogger/area/readByParent?parent=" + area,
+                beforeSend: auth_fn,
+                success: function(data) {
+                    $.each(data, function() {
+                        $('#area_select_by_datapoint').append("<option value='" + this.id + "'>" + this.name + "</option>");
+                    });
+                }
+            });
+            $('#datapoint_editor_form_div').show();
+            datapoint_editor_visible = true;
+        } else if (($('#datapoint_data').val() == '') && ($("#dp-operation-preview").length == 0)) {
+            $("#message-box").html("Data Point is empty.  <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").show();
+            $("#self-close").click(function() {
+                $(this).parent().hide();
+                $(this).parent().html("");
+            });
+        } else {
+            var _data = "";
+            if ($("#dp-operation-preview").length == 1)
+                _data = $("#dp-operation-preview").val();
+            else
+                _data = $('#datapoint_data').val();
+            area = $('#area_select_by_datapoint').val();
+            link = $('input[name="datapoint_radio"]:checked').attr('link');
+            $.ajax({
+                type: "GET",
+                url: base_url + "/myblogger/datapoint/update?id=" + _id + "&_data=" + _data + "&_area=" + area + "&_link=" + link,
+                beforeSend: auth_fn,
+                success: function(data) {
+                    copier = data;
+                    $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+                    $("#message-box").show();
+                    $("#self-close").click(function() {
+                        $(this).parent().hide();
+                        $(this).parent().html("");
+                    });
+                    load_datapoint_wrapper();
+                    $('#datapoint_editor_form_div').hide();
+                    datapoint_editor_visible = false;
+                }
+            });
+        }
+    }
+
+    delete_datapoint = function() {
+        if (!$('input[name="datapoint_radio"]:checked').val()) {
+            $("#message-box").html("Please select a Data Point..  <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").show();
+            $("#self-close").click(function() {
+                $(this).parent().hide();
+                $(this).parent().html("");
+            });
+            return false;
+        }
+        var _id = $('input[name="datapoint_radio"]:checked').val();
+        copier = _id;
+        $.ajax({
+            type: "GET",
+            url: base_url + "/myblogger/datapoint/delete?id=" + _id,
+            beforeSend: auth_fn,
+            success: function(data) {
+                $("#message-box").html("" + data + ", please wait... resetting link (if any).  <span id='self-close' style='cursor: default'>X</span>");
+                $("#message-box").show();
+                $("#self-close").click(function() {
+                    $(this).parent().hide();
+                    $(this).parent().html("");
+                });
+                resetDatapointLink(copier);
+            }
+        });
+    }
+
+    resetDatapointLink = function(id) {
+        parentDP = $('input[name="datapoint_radio"]:checked').attr('parentDP');
+        if (parentDP != "") {
+            $.ajax({
+                type: "GET",
+                url: base_url + "/myblogger/datapoint/updateLink?id=" + parentDP + "&_link=",
+                beforeSend: auth_fn,
+                success: function(data) {
+                    $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+                    $("#message-box").show();
+                    $("#self-close").click(function() {
+                        $(this).parent().hide();
+                        $(this).parent().html("");
+                    });
+                }
+            });
+        } else {
+            $("#message-box").html("Delete and Reset was successful. <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").show();
+            $("#self-close").click(function() {
+                $(this).parent().hide();
+                $(this).parent().html("");
+            });
+        }
+        $('#datapoint_editor_form_div').hide();
+        datapoint_editor_visible = false;
+        load_datapoint_wrapper();
+    }
+
+    datapoint_pin_subject = function() {
+        datapoint = $('input[name="datapoint_radio"]:checked');
+        if (!datapoint.val()) {
+            $("#message-box").html("Please select a Data Point..  <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").show();
+            $("#self-close").click(function() {
+                $(this).parent().hide();
+                $(this).parent().html("");
+            });
+            return false;
+        }
+        $("#datapoint-details").append("<div id=\"subject-pinning-machine\"></div>");
+        $("#subject-pinning-machine").append("<div id=\"words-container\"></div><br /><div><textarea id='dp-operation-preview'></textarea></div>");
+        $("#dp-operation-preview").val("" + $('#datapoint_' + datapoint.val()).html());
+        $.each($('#datapoint_' + datapoint.val()).html().split(" "), function() {
+            $("#words-container").append("<span class='pinnable-word'>" + this + "</span>");
+        });
+        setTimeout(function() {
+            $('.pinnable-word').click(function() {
+                var pinnable_word = $(this).html();
+                if (pinning_in_progress) {
+                    $('#dp-operation-preview').val($('#dp-operation-preview').val().replace(pinnable_word, "<d l='" + copier + "'>" + pinnable_word + "</d>"));
+                    pinning_in_progress = false;
+                } else {
+                    if (!subject_editor_constructed) {
+                        construct_editor_form_subject();
+                    }
+                    $('#subject_content').val(pinnable_word);
+                    $('#area_select_by_subject').val("");
+                    $('#subject_datapoint').val("0");
+                    $('#subject-create-new').show();
+                    $('#subject_editor_form_div').show();
+                    $('#create-new-area').hide();
+                    subject_editor_visible = true;
+                    pinning_in_progress = true;
+                    area = $('input[name="datapoint_radio"]:checked').attr("area");
+                    resolveArea(area, "", function(_this, _for) {
+                        $('#area_select_by_subject').append("<option value='" + _this.id + "'>" + _this.name + "</option>");
+                    });
+                }
+            });
+        }, 300);
+    }
+
+    browse_linked_subject = function() {
+        linked_subject_selected = false;
+        $("#subject-browse").hide();
+        browse_subject(subject_to_browse);
+    }
+
+    $('#datapoint-create-new').click(create_new_datapoint);
+    $('#datapoint-link-new').click(link_new_datapoint);
+    $('#datapoint-update').click(update_datapoint);
+    $('#datapoint-delete').click(delete_datapoint);
+    $('#datapoint-pin-subject').click(datapoint_pin_subject);
+    $('#subject-browse').click(browse_linked_subject);
+
+    show_area_cp = function(areaID, elem) {
+        hasMarkBottomClass = false;
+        if ($(elem).hasClass("mark-bottom"))
+            hasMarkBottomClass = true;
+        $(".areaChild").removeClass("mark-bottom");
+        if (!hasMarkBottomClass) {
+            $(elem).addClass("mark-bottom");
+            $('#area-control-panel').show();
+            area_control_panel_visible = true;
+            resolveArea(areaID, "", function(_this, _for) {
+                $("#count-in-area").html("Count: " + _this.count);
+            });
+            $("#subject-by-area-container").html("");
+        } else {
+            $('#area-control-panel').hide();
+            area_control_panel_visible = false;
+        }
+    }
+
+    $("#area-browse").click(function() {
+        areaID = $('.mark-bottom').attr('area');
+        $.ajax({
+            type: "GET",
+            url: base_url + "/myblogger/subject/findByArea?_area=" + areaID,
+            beforeSend: auth_fn,
+            success: function(data) {
+                $("#subject-by-area-container").html("<ul></ul>");
+                if (data.length == 0)
+                    $("#subject-by-area-container ul").append("<li>Empty Subject List</li>");
+                else {
+                    $.each(data, function() {
+                        $("#subject-by-area-container ul").append("<li id=\"pick-subj-" + this.id + "\">" + this.content + "</li>");
+                    });
+                    setTimeout(function() {
+                        $("[id^=pick-subj-]").click(function() {
+                            var _subject_id = $(this).attr('id').split("pick-subj-")[1];
+                            if (_subject_id != "") {
+                                browse_subject($(this).attr('id').split("pick-subj-")[1]);
+                                $("#subject-by-area-container").html("");
+                                $('#area-control-panel').hide();
+                                area_control_panel_visible = false;
+                            }
+                        });
+                    }, 500);
+                }
+            }
+        });
+    });
 </script>
+
 </html>
