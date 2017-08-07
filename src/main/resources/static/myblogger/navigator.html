@@ -191,7 +191,7 @@
     linked_subject_selected = false;
     subject_to_browse = "";
     select_option_placeholder = "-- select --";
-    base_url = ""
+    base_url = "";
 
     auth_fn = function(xhr) {}
 
@@ -807,11 +807,14 @@
             });
         } else {
             var _data = "";
-            if ($("#dp-operation-preview").length == 1)
+            if ($("#dp-operation-preview").length == 1) {
                 _data = $("#dp-operation-preview").val();
-            else
+                area = $('input[name="datapoint_radio"]:checked').attr("area");
+            }
+            else {
                 _data = $('#datapoint_data').val();
-            area = $('#area_select_by_datapoint').val();
+                area = $('#area_select_by_datapoint').val();
+            }
             link = $('input[name="datapoint_radio"]:checked').attr('link');
             $.ajax({
                 type: "GET",
