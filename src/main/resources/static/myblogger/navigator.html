@@ -125,6 +125,7 @@
             <span class="button-control">
                 <button id="domain-create-new">Create New</button>
                 <button id="domain-delete">Delete</button>
+                <button id="subject-link">Link this Subject</button>
                 <button onclick="return collapse_editors();">Collapse Editors</button>
                 <button onclick="return reload_this_domain();">Reload this Domain</button>
             </span>
@@ -136,9 +137,9 @@
             Subject:&nbsp;<span id="subject-details"></span>
             <span class="button-control">
                 <button id="subject-create-new" style="display:None;">Create New</button>
-                <button id="subject-link">Link this Subject</button>
                 <button id="subject-link-datapoint">Link a Data Point</button>
                 <button id="subject-delete">Delete</button>
+                <button id="refresh-subject" style="display:None;">Refresh Subject</button>
             </span>
             <div id="subject_editor_form_div">
             </div>
@@ -210,6 +211,7 @@
         $('#area-div').hide();
         $('#datapoint-details').html("");
         $('#datapoint-div').hide();
+        $('#refresh-subject').hide();
         domain_changed();
     }
 
@@ -355,6 +357,7 @@
             beforeSend: auth_fn,
             success: function(data) {
                 $('#subject-details').html("<span subjectid='" + this.url.split("id=")[1] + "' datapoint='" + data.datapoint + "' area='" + data.area + "'>" + data.content + "</span>");
+                $('#refresh-subject').show();
                 resolveArea(data.area, "", function(_this, _for) {
                     $('#area-div').show();
                     $('#area-content').html("<span area='" + _this.id + "'>Area: " + _this.name + "</span><div></div>");
@@ -367,6 +370,16 @@
             }
         });
     }
+
+    $("#refresh-subject").click(function(){
+        subjectid = $('#subject-details span').attr('subjectid');
+        close_message();
+        $('#area-content').html("");
+        $('#area-div').hide();
+        $('#datapoint-details').html("");
+        $('#datapoint-div').hide();
+        browse_subject(subjectid);
+    });
 
     domain_changed = function() {
         if ($("#domain-select").val() != select_option_placeholder) {
@@ -399,6 +412,7 @@
                     $(this).parent().hide();
                     $(this).parent().html("");
                 });
+                $('#subject-details span').attr('datapoint', arg_dp_id);
                 load_datapoint_wrapper();
             }
         });
@@ -493,7 +507,7 @@
 
     construct_editor_form_subject = function() {
         $('#subject_editor_form_div').append("<br /><input id='subject_content' type='text' value='' placeholder='Subject' /> <br/>");
-        $('#subject_editor_form_div').append("<br /><select id='area_select_by_subject'></select>&nbsp;<span id='immediate-area-creator'><button id='create-new-area'>Create new Topic</button></span><br/>");
+        $('#subject_editor_form_div').append("<br /><select id='area_select_by_subject'></select>&nbsp;<button id='create-new-area'>Create new Topic</button>&nbsp;<span id='immediate-area-creator'></span><br/>");
         $('#subject_editor_form_div').append("<br /><input id='subject_datapoint' type='text' value='' placeholder='Content' /> <br/>");
         $('#create-new-area').click(create_new_area);
         subject_editor_visible = false;
@@ -534,6 +548,7 @@
                     });
                     $('#subject_editor_form_div').hide();
                     subject_editor_visible = false;
+                    $('#subject-create-new').hide();
                 }
             });
         }
@@ -585,7 +600,7 @@
 
     construct_editor_form_datapoint = function() {
         $('#datapoint_editor_form_div').append("<br /><input id='datapoint_data' type='text' value='' placeholder='Data' /> <br/>");
-        $('#datapoint_editor_form_div').append("<br /><select id='area_select_by_datapoint'></select>&nbsp;<span id='immediate-area-creator2'><button id='create-new-area2'>Create new Topic</button></span><br/>");
+        $('#datapoint_editor_form_div').append("<br /><select id='area_select_by_datapoint'></select>&nbsp;<button id='create-new-area2'>Create new Topic</button>&nbsp;<span id='immediate-area-creator2'></span><br/>");
         $('#create-new-area2').click(create_new_area2);
         datapoint_editor_visible = false;
         datapoint_editor_constructed = true;
@@ -709,7 +724,7 @@
             if (!datapoint_editor_constructed)
                 construct_editor_form_datapoint();
             $('#datapoint_data').val("");
-            area = $('input[name="datapoint_radio"]:checked').attr("area");
+            area = $('#subject-details span').attr("area");
             $('#area_select_by_datapoint').html("");
             resolveArea(area, "", function(_this, _for) {
                 $('#area_select_by_datapoint').append("<option value='" + _this.id + "'>" + _this.name + "</option>");
