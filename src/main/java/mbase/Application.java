@@ -67,6 +67,7 @@ public class Application {
       protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
         .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
+        .antMatchers("/evttracker/inc").permitAll()
         .anyRequest().fullyAuthenticated().and().
         httpBasic().and().
         csrf().disable();
