@@ -3,7 +3,7 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>mBase myblogger - Navigator</title>
+    <title>myblogger Navigator</title>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
     <style>
@@ -23,6 +23,10 @@
         d {
             border-bottom-style: dashed;
             border-width: thin;
+        }
+
+        button {
+            margin-top: 5px;
         }
         
         #message-box {
@@ -140,6 +144,7 @@
                 <button id="subject-link-datapoint">Link a Data Point</button>
                 <button id="subject-delete">Delete</button>
                 <button id="refresh-subject" style="display:None;">Refresh Subject</button>
+                <button id="back-a-subject" style="display:None;">Back</button>
             </span>
             <div id="subject_editor_form_div">
             </div>
@@ -191,6 +196,7 @@
     pinning_in_progress = false;
     linked_subject_selected = false;
     subject_to_browse = "";
+    subject_history = [];
     select_option_placeholder = "-- select --";
     base_url = "";
 
@@ -350,6 +356,8 @@
             $('#subject_editor_form_div').hide();
             subject_editor_visible = false;
         }
+        if(subject_history.length == 0)
+            $("#back-a-subject").hide();
         $('#subject-details').html("");
         $.ajax({
             type: "GET",
@@ -381,6 +389,21 @@
         browse_subject(subjectid);
     });
 
+    $("#back-a-subject").click(function(){
+        if(subject_history.length > 0) {
+            subjectid = subject_history.pop();
+            close_message();
+            $('#area-content').html("");
+            $('#area-div').hide();
+            $('#datapoint-details').html("");
+            $('#datapoint-div').hide();
+            browse_subject(subjectid);
+        }
+        else {
+            $(this).hide();
+        }
+    });
+
     domain_changed = function() {
         if ($("#domain-select").val() != select_option_placeholder) {
             collapse_editors();
@@ -388,6 +411,8 @@
             $('#subject-div').show();
             subjectid = $('#domain-select').find(':selected').attr('subjectid');
             if (subjectid != "null") {
+                subject_history = [];
+                $('#back-a-subject').hide();
                 browse_subject(subjectid);
             } else {
                 if (!subject_editor_constructed) {
@@ -455,52 +480,42 @@
         $('#datapoint-details').html("<ul></ul>");
         show_message("Loading datapoints...");
         if (datapoint != "0")
-            load_datapoint(datapoint, "");
+            load_datapoint(datapoint);
         else {
             $('#datapoint-details ul').append("<li><input type='radio' name='datapoint_radio' value='' area='' parentDP='' /><span id=\"datapoint_0\">List is empty.</span></li>");
             close_message();
         }
     }
 
-    load_datapoint = function(datapoint, parentID) {
-        parentDP = "";
-        if (parentID != "") {
-            parentDP = parentID;
-        }
+    load_datapoint = function(datapoint) {
         $.ajax({
             type: "GET",
-            url: base_url + "/myblogger/datapoint/read?id=" + datapoint,
+            url: base_url + "/myblogger/datapoint/readFrom?id=" + datapoint,
             beforeSend: auth_fn,
             success: function(data) {
-                $('#datapoint-details ul').append("<li><input type='radio' name='datapoint_radio' value='" + data.id + "' area='" + data.area + "' parentDP='" + parentDP + "' link='" + data.link + "'/><span id=\"datapoint_" + data.id + "\">" + data.data + "</span></li>");
-                resolveArea(data.area, data, function(_this, data) {
-                    $('#datapoint_' + data.id).parent().append("<span class='areaTag' area='" + _this.id + "'>" + _this.name + "</span>");
-                });
-                _link_undefinied = false;
-                _link_empty = false;
-                if (typeof data.link != "undefined") {
-                    if (data.link != "") {
-                        datapoint = data.link;
-                        load_datapoint(datapoint, data.id);
-                    } else
-                        _link_empty = true;
-                } else
-                    _link_undefinied = true;
-                if (_link_undefinied || _link_empty) {
-                    close_message();
-                    $('d').click(function() {
-                        if (linked_subject_selected) {
-                            $("#subject-browse").hide();
-                            $(this).css("borderBottomStyle", "dashed");
-                            linked_subject_selected = false;
-                        } else {
-                            $("#subject-browse").show();
-                            $(this).css("borderBottomStyle", "solid");
-                            subject_to_browse = $(this).attr("l");
-                            linked_subject_selected = true;
-                        }
-                    });
+                copier = "";
+                var _this;
+                for (var k = 0; k < data.length; k++) {
+                    _this = data[k];
+                    $('#datapoint-details ul').append("<li><input type='radio' name='datapoint_radio' value='" + _this.dp.id + "' area='"
+                        + _this.dp.area + "' parentDP='" + copier + "' link='" + _this.dp.link + "'/><span id=\"datapoint_" + _this.dp.id
+                        + "\">" + _this.dp.data + "</span><span class='areaTag' area='" + _this.area.id + "'>" + _this.area.name
+                        + "</span></li>");
+                    copier = _this.dp.id;
                 }
+                close_message();
+                $('d').click(function() {
+                    if (linked_subject_selected) {
+                        $("#subject-browse").hide();
+                        $(this).css("borderBottomStyle", "dashed");
+                        linked_subject_selected = false;
+                    } else {
+                        $("#subject-browse").show();
+                        $(this).css("borderBottomStyle", "solid");
+                        subject_to_browse = $(this).attr("l");
+                        linked_subject_selected = true;
+                    }
+                });
             }
         });
     }
@@ -609,7 +624,8 @@
 
     construct_editor_form_area2 = function() {
         $('#immediate-area-creator2').append("<br /><input id='area_name2' type='text' value='' placeholder='Area Name' /> <br/>");
-        $('#immediate-area-creator2').append("<br /><input id='area_parent2' type='text' value='' placeholder='Parent Area' />&nbsp;<button id='parent_area_picker'>Pick by Subject</button>");
+        $('#immediate-area-creator2').append("<br /><input id='area_parent2' type='text' value='' placeholder='Parent Area' />&nbsp;");
+        $('#immediate-area-creator2').append("<button id='parent_area_picker'>Pick by Subject</button>");
         area_editor_visible2 = false;
         area_editor_constructed2 = true;
         $('#immediate-area-creator2').hide();
@@ -630,6 +646,7 @@
                 construct_editor_form_area2();
             $('#area_name2').val("");
             $('#area_parent2').val("");
+            $('#parent_area_picker').html("Pick by Subject");
             $('#immediate-area-creator2').show();
             area_editor_visible2 = true;
         } else if ($('#area_name2').val() == '') {
@@ -862,13 +879,13 @@
             return false;
         }
         var _id = $('input[name="datapoint_radio"]:checked').val();
-        copier = _id;
+        copier = $('input[name="datapoint_radio"]:checked').attr('parentDP');
         $.ajax({
             type: "GET",
             url: base_url + "/myblogger/datapoint/delete?id=" + _id,
             beforeSend: auth_fn,
             success: function(data) {
-                $("#message-box").html("" + data + ", please wait... resetting link (if any).  <span id='self-close' style='cursor: default'>X</span>");
+                $("#message-box").html("" + data + ", please wait... resetting link if found one.  <span id='self-close' style='cursor: default'>X</span>");
                 $("#message-box").show();
                 $("#self-close").click(function() {
                     $(this).parent().hide();
@@ -880,11 +897,10 @@
     }
 
     resetDatapointLink = function(id) {
-        parentDP = $('input[name="datapoint_radio"]:checked').attr('parentDP');
-        if (parentDP != "") {
+        if (id != "") {
             $.ajax({
                 type: "GET",
-                url: base_url + "/myblogger/datapoint/updateLink?id=" + parentDP + "&_link=",
+                url: base_url + "/myblogger/datapoint/updateLink?id=" + id + "&_link=",
                 beforeSend: auth_fn,
                 success: function(data) {
                     $("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
@@ -896,7 +912,7 @@
                 }
             });
         } else {
-            $("#message-box").html("Delete and Reset was successful. <span id='self-close' style='cursor: default'>X</span>");
+            $("#message-box").html("Link Reset was successful. <span id='self-close' style='cursor: default'>X</span>");
             $("#message-box").show();
             $("#self-close").click(function() {
                 $(this).parent().hide();
@@ -955,6 +971,9 @@
     browse_linked_subject = function() {
         linked_subject_selected = false;
         $("#subject-browse").hide();
+        subject_history.push($('#subject-details span').attr('subjectid'));
+        if(subject_history.length == 1)
+            $('#back-a-subject').show();
         browse_subject(subject_to_browse);
     }
 
@@ -1002,7 +1021,10 @@
                         $("[id^=pick-subj-]").click(function() {
                             var _subject_id = $(this).attr('id').split("pick-subj-")[1];
                             if (_subject_id != "") {
-                                browse_subject($(this).attr('id').split("pick-subj-")[1]);
+                                subject_history.push($('#subject-details span').attr('subjectid'));
+                                if(subject_history.length == 1)
+                                    $('#back-a-subject').show();
+                                browse_subject(_subject_id);
                                 $("#subject-by-area-container").html("");
                                 $('#area-control-panel').hide();
                                 area_control_panel_visible = false;

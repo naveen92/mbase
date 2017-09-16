@@ -1,5 +1,6 @@
 package main.java.mbase.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import main.java.mbase.core.myblogger.DatapointVO;
+import main.java.mbase.model.Area;
 import main.java.mbase.model.Datapoint;
 
 @EntityScan("main.java.mbase")
@@ -17,6 +20,9 @@ public class DatapointRestServiceController {
 	
 	@Autowired
 	private IDatapointRepository repo;
+	
+	@Autowired
+	private IAreaRepository areaRepo;
 	
     // CREATE
     @RequestMapping("/myblogger/datapoint/create")
@@ -41,6 +47,32 @@ public class DatapointRestServiceController {
         } catch (Exception e) {
         }
         return datapoint;
+    }
+
+    // READ_FROM
+    @RequestMapping("/myblogger/datapoint/readFrom")
+    @ResponseBody
+    public List<DatapointVO> readDatapointFrom(long id) {
+    	List<DatapointVO> datapointList = new ArrayList<DatapointVO>();
+    	Datapoint datapoint = null;
+    	Area area = null;
+    	boolean exit = false;
+    	String link;
+        try {
+        	while(!exit) {
+            	datapoint = repo.findOne(id);
+            	area = areaRepo.findOne(Long.parseLong(datapoint.getArea()));
+            	datapointList.add(new DatapointVO(datapoint, area));
+            	link = datapoint.getLink();
+            	if("".equals(link)) {
+            		exit = true;
+            	} else {
+            		id = Long.parseLong(link);
+            	}
+        	}
+        } catch (Exception e) {
+        }
+        return datapointList;
     }
 
     // UPDATE
