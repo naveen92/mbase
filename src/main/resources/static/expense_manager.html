@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mbase | Expense Manager</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <style>
+        body {
+            font-family: verdana;
+        }
+        
+        button {
+            margin-top: 5px;
+        }
+        
+        #message-box {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        .button-control {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        #container {
+            max-width: 600px;
+        }
+
+        #main_table {
+            border: 1px solid black;
+            border-collapse: collapse;
+            min-width: 100%;
+        }
+
+        #main_table td, th{
+            border: 1px solid black;
+            margin: 0px;
+        }
+        
+        .panel {
+            margin-top: 10px;
+            padding-left: 5px;
+            padding-right: 5px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        .tag {
+            margin: 7px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px solid black;
+            background: #f4f142;
+        }
+        
+        #table-div {
+            margin: 7px;
+        }
+        
+        .mark-bottom {
+            border-bottom: 1px solid grey;
+        }
+
+        .amount {
+            text-align: right;
+        }
+
+        .col-sel {
+            text-align: center;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <a href="/">Home</a>
+    <h4>mBase | Expense Manager</h4>
+    <div id="container">
+        <div id="parent-details"></div>
+        <div id="table-div" class="panel">
+            <table id="main_table">
+            </table>
+            <div class="button-control">
+                <button id="refresh-button">Refresh</button>
+                <button id="create-new">Create New</button>
+                <button id="update">Update</button>
+                <button id="delete">Delete</button>
+            </div>
+            <div id="editor_form_div">
+            </div>
+        </div>
+    </div>
+    <div id="message-box"></div>
+</body>
+<script>
+
+parent = "0";
+target_disporder = 0;
+editor_visible = false;
+
+base_url = "";
+
+auth_fn = function(xhr) {}
+
+construct_create_form = function() {
+	$('#editor_form_div').append("<br /><input id='title' type='text' value='' placeholder='Title' /> <br/>");
+	$('#editor_form_div').append("<br /><input id='amount' type='number' value='' placeholder='Amount' /> <br/>");
+	editor_visible = false;
+	$('#editor_form_div').hide();
+}
+
+$(function(){
+    $("#refresh-button").click(refresh);
+	construct_create_form();
+    refresh();
+});
+
+refresh = function() {
+    $("#parent-details").html("Expense details:");
+    $('#editor_form_div').hide();
+    $("#main_table").html("<tr><th>sel.</th><th>Title</th><th>Amount</th></tr>");
+    $("#message-box").html("<i>Loading expense data...</i>  <span id='self-close' style='cursor: default'>X</span>");
+    $("#message-box").show();
+    $("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+    $.ajax({
+		type: "GET",
+		url: base_url + "/expense/readByParent" + "?parent=" + parent,
+        beforeSend: auth_fn,
+		success: function(data) {
+            $("#self-close").click();
+            let total = 0;
+            data.sort(function(a, b) {
+                return parseFloat(a.disporder) - parseFloat(b.disporder);
+            });
+            for(let i = 0; i < data.length; i++) {
+                $("#main_table").append("<tr><td class='col-sel' disporder=\"" + data[i].disporder + "\" expenseid=\""
+                    + data[i].id + "\"><input type=\"radio\" name=\"expense_radio\"/></td><td>"
+                    + data[i].title + "</td><td class='amount'>" + data[i].amount + "</td></tr>\n");
+                total += data[i].amount;
+            }
+            $("#main_table").append("<tr><td></td><td><strong>Total</strong></td><td class='amount'><strong>" + total + "</strong></td>");
+        }
+    });
+    
+    if(parent != "0") {
+        $.ajax({
+            type: "GET",
+            url: base_url + "/expense/read" + "?id=" + parent,
+            beforeSend: auth_fn,
+            success: function(data) {
+                $("#parent-details").html("Expense detail of <strong>" + data.title + "</strong>");
+            }
+        });
+    }
+}
+
+$('#create-new').click(function() {
+	if(!editor_visible) {
+        $('#title').val("");
+        $('#amount').val("");
+		$('#editor_form_div').show();
+		editor_visible = true;
+	}
+    else if (($('#title').val() | $('#title').val() == '')
+                && ($('#amount').val() | $('#amount').val() == '')) {
+		$("#message-box").html("Enter values in form.  <span id='self-close' style='cursor: default'>X</span>");
+		$("#message-box").show();
+		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+	}
+	else {
+        if (target_disporder == 0) {
+            target_disporder = "" + (parseInt($("#main_table tr:nth-last-child(2) td:first").attr("disporder")) + 1);
+        }
+        let title = $('#title').val();
+        let amount = $('#amount').val();
+		$("#message-box").html("Processing...  <span id='self-close' style='cursor: default'>X</span>");
+		$("#message-box").show();
+		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+		$.ajax({
+			type: "GET",
+			url: base_url + "/expense/create?disporder=" + target_disporder + "&title=" + title + "&amount=" + amount + "&parent=" + parent,
+            beforeSend: auth_fn,
+			success: function(data) {
+                target_disporder = 0;
+				$("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+				$("#message-box").show();
+				$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+				refresh();
+				$('#editor_form_div').hide();
+				editor_visible = false;
+			}
+		});
+	}
+});
+
+$('#update').click(function() {
+	if(!$('input[name="expense_radio"]:checked').val()) {
+		$("#message-box").html("Please select an expense..  <span id='self-close' style='cursor: default'>X</span>");
+		$("#message-box").show();
+		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+		return false;
+	}
+	var _id = $('input[name="expense_radio"]:checked').parent().attr('expenseid');
+	if(!editor_visible) {
+        $('#title').val($('input[name="expense_radio"]:checked').parent().parent().children().eq(1).html());
+        $('#amount').val($('input[name="expense_radio"]:checked').parent().parent().children().eq(2).html());
+		$('#editor_form_div').show();
+		editor_visible = true;
+	}
+    else if (($('#title').val() | $('#title').val() == '')
+                && ($('#amount').val() | $('#amount').val() == '')) {
+		$("#message-box").html("Enter values in form.  <span id='self-close' style='cursor: default'>X</span>");
+		$("#message-box").show();
+		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+	}
+	else {
+		$("#message-box").html("Processing...  <span id='self-close' style='cursor: default'>X</span>");
+		$("#message-box").show();
+		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+        target_disporder = $('input[name="expense_radio"]:checked').parent().attr('disporder');
+        let title = $('#title').val();
+        let amount = $('#amount').val();
+		$.ajax({
+			type: "GET",
+			url: base_url + "/expense/update?id=" + _id + "&disporder=" + target_disporder + "&title=" + title + "&amount=" + amount + "&parent=" + parent,
+            beforeSend: auth_fn,
+			success: function(data) {
+                target_disporder = 0;
+				$("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+				$("#message-box").show();
+				$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+				refresh();
+				$('#editor_form_div').hide();
+				editor_visible = false;
+			}
+		});
+	}
+});
+
+$('#delete').click(function() {
+	if(!$('input[name="expense_radio"]:checked').val()) {
+		$("#message-box").html("Please select an expense..  <span id='self-close' style='cursor: default'>X</span>");
+		$("#message-box").show();
+		$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+		return false;
+	}
+	var _id = $('input[name="expense_radio"]:checked').parent().attr('expenseid');
+    $("#message-box").html("Processing...  <span id='self-close' style='cursor: default'>X</span>");
+    $("#message-box").show();
+    $("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+    $.ajax({
+		type: "GET",
+		url: base_url + "/expense/delete?id=" + _id,
+        beforeSend: auth_fn,
+		success: function(data){
+			$("#message-box").html("" + data + "  <span id='self-close' style='cursor: default'>X</span>");
+			$("#message-box").show();
+			$("#self-close").click(function(){$(this).parent().hide();$(this).parent().html("")});
+			refresh();
+		}
+	});
+});
+
+</script>
+
+</html>

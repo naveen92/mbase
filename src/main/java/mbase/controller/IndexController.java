@@ -10,9 +10,10 @@ public class IndexController {
         return "Greetings from Spring Boot with Jenkins build automation..!<br /><h3>Menu</h3>"
         		+ "<ul>"
         		+ "<li><a href=\"/index.html\">Todo Manager</a></li>"
+        		+ "<li><a href=\"/expense_manager.html\">Expense Manager</a></li>"
         		+ "<li><a href=\"/myblogger/navigator.html\">myblogger - Navigator</a></li>"
-        		+ "<li><a href=\"/event_tracker.html\">Event Tracker</a></li>"
         		+ "<li><a href=\"/birthday.html\">Birthday Manager</a></li>"
+        		+ "<li>Event Tracker</li>"
         		+ "<ul>";
     }
 
